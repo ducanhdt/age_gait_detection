@@ -1,4 +1,5 @@
 import os
+import numpy as np
 import pandas as pd
 from torch.utils.data import Dataset
 
@@ -9,7 +10,7 @@ class AutomaticExtractionDataset(Dataset):
         self.labels = []
         self.ids = []
         for file in os.listdir(data_folder):
-            if "seq0" in file:
+            if "seq1" in file:
                 try:
                     id = file.split('_')[1][2:]
                     self.ids.append(id)
@@ -23,8 +24,11 @@ class AutomaticExtractionDataset(Dataset):
 
     def __getitem__(self, idx):
         sample = pd.read_csv(self.datas[idx],skiprows=2,header=None).to_numpy()
+        # print(sample.shape,1)
+        sample = np.fft.fft(sample,n=64,axis=0)
+        # print(sample.shape,2)
         label = self.labels[idx]
-        return sample[:150],label
+        return sample,label
 
 if __name__ == '__main__':
     path = "OU-IneritialGaitData/AutomaticExtractionData_IMUZCenter"
